@@ -1,5 +1,5 @@
 export function init() {
-
+    console.log("hs-sdk init");
 }
 
 export function diagnostic() {

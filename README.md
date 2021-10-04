@@ -7,9 +7,9 @@
 
 ### Step 1:
 
-Create a file called .npmrc in your project and add the below line.
+Create a file called .npmrc / .yarnrc in your project and add the below line.
 
-`@ip-synamedia:registry=https://artifactory01.engit.synamedia.com/artifactory/api/npm/spvss-cloud-ci-npm/`
+`"@ip-synamedia:registry=https://artifactory01.engit.synamedia.com/artifactory/api/npm/spvss-cloud-ci-npm/"`
 
 ### Step 2:
 
@@ -51,7 +51,7 @@ yarn link "@ip-synamedia/hs-sdk"
 It will now use the code on your local machine.
 
 ```
-import { init } from '@ip-synamedia/hs-sdk/lib/server';
+import { init } from '@ip-synamedia/hs-sdk/dist/api';
 
 init();
 ```
