@@ -1,0 +1,26 @@
+{
+    "name": "@ip-synamedia/hs-sdk",
+    "version": "1.0.38",
+    "main": "./dist/index.js",
+    "description": "API for Hyperscale application",
+    "author": "Foxboro",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git@github-chf01.synamedia.com:hyperscale/hs-sdk.git"
+    },
+    "dependencies": {},
+    "scripts": {
+        "clean": "rm -rf dist",
+        "prepublish": "npm run build",
+        "eslint": "eslint --fix src",
+        "compile": "babel src -d dist",
+        "build": "npm run clean && npm run compile"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.13.16",
+        "@babel/core": "^7.14.0",
+        "@babel/preset-env": "^7.14.1",
+        "eslint": "^7.26.0"
+    }
+}
