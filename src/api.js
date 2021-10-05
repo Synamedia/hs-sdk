@@ -1,14 +1,26 @@
 const communityManagerService = "hyperscale-community-manager:9092";
 
 let cachedAppStorage;
+let tenant;
+let deviceId;
 
 async function loadAppStorageFromDb() {
-    const {tenant, sessionInfo} = window.diagnostics ? window.diagnostics() : {};
-    if (!tenant || !sessionInfo) {
+    const {sessionInfoStr} = window.diagnostics ? window.diagnostics() : {};
+    if (!sessionInfoStr) {
+        console.error("cannot load appStorage from DB, sessionInfo information is missing");
         return;
     }
-    const {deviceId} = JSON.parse(sessionInfo);
-    if (!deviceId) {
+    let sessionInfo;
+    try {
+        sessionInfo = JSON.parse(sessionInfoStr);
+    } catch (err) {
+        console.error("cannot load appStorage from DB, failed to parse sessionInfo");
+        return;
+    }
+    tenant = sessionInfo.tenant;
+    deviceId = sessionInfo.deviceId;
+    if (!tenant || !deviceId) {
+        console.error("cannot load appStorage from DB, either tenant or deviceId information is missing");
         return;
     }
     try {
@@ -16,13 +28,13 @@ async function loadAppStorageFromDb() {
         const data = await response.json();
         cachedAppStorage = data?.appStorage;
     } catch (err) {
-        console.log(err);
+        console.error(err);
     }
 }
 
-export async function init() {
+export function init() {
     console.log("hs-sdk init");
-    await loadAppStorageFromDb();
+    return loadAppStorageFromDb();
 }
 
 export function diagnostic() {
@@ -41,27 +53,22 @@ export function getSessionStorage(key) {
 }
 
 export async function setPersistentStorage(key, value) {
-    const {tenant, sessionInfo} = window.diagnostics ? window.diagnostics() : {};
-    if (!tenant || !sessionInfo) {
-        return;
-    }
-    const {deviceId} = JSON.parse(sessionInfo);
-    if (!deviceId) {
+    if (!cachedAppStorage) {
+        console.error(`failed to set ${key}, appStorage was not loaded from DB`);
         return;
     }
     try {
-        const appStorage = {};
-        appStorage[key] = value;
+        const appStorage = {[key]: value};
         const options = {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({appStorage})};
         const response = await fetch(`http://${communityManagerService}/devices/1.0/tenant/${tenant}/resourceId/${deviceId}`, options);
         if (response?.status === 200) {
             cachedAppStorage[key] = value;
         }
     } catch (err) {
-        console.log(err);
+        console.error(err);
     }
 }
 
 export function getPersistentStorage(key) {
-    return cachedAppStorage ? cachedAppStorage[key] : undefined;
+    return cachedAppStorage?.[key];
 }
