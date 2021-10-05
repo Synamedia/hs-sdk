@@ -70,5 +70,8 @@ export async function setPersistentStorage(key, value) {
 }
 
 export function getPersistentStorage(key) {
+    if (!cachedAppStorage) {
+        console.error(`failed to get ${key}, appStorage was not loaded from DB`);
+    }
     return cachedAppStorage?.[key];
 }
