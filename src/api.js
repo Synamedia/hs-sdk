@@ -5,7 +5,7 @@ let tenant;
 let deviceId;
 
 async function loadAppStorageFromDb() {
-    const {sessionInfo:sessionInfoStr} = window.diagnostics ? window.diagnostics() : {};
+    const {sessionInfo:sessionInfoStr} = diagnostics();
     if (!sessionInfoStr) {
         console.error("cannot load appStorage from DB, sessionInfo information is missing");
         return;
@@ -37,11 +37,8 @@ export function init() {
     return loadAppStorageFromDb();
 }
 
-export function diagnostic() {
-    return {
-        wifi: "",
-        tenant: ""
-    };
+export function diagnostics() {
+    return window.diagnostics ? window.diagnostics() : {};
 }
 
 export function setSessionStorage(key, value) {
