@@ -5,7 +5,7 @@ let tenant;
 let deviceId;
 
 async function loadAppStorageFromDb() {
-    const {sessionInfo:sessionInfoStr} = diagnostics();
+    const {sessionInfo:sessionInfoStr} = diagnostics() || {};
     if (!sessionInfoStr) {
         console.error("cannot load appStorage from DB, sessionInfo information is missing");
         return;
