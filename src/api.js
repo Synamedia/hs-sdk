@@ -38,7 +38,7 @@ export function init() {
 }
 
 export function diagnostics() {
-    return window.diagnostics ? window.diagnostics() : {};
+    return typeof window !== "undefined" && window.diagnostics ? window.diagnostics() : {};
 }
 
 export function setSessionStorage(key, value) {
