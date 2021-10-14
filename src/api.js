@@ -49,6 +49,10 @@ export function getSessionStorage(key) {
     return window.hsStorageGetItem(key);
 }
 
+export function clearSessionStorage() {
+    return window.hsStorageSetItem("state", "{}");
+}
+
 export async function setPersistentStorage(key, value) {
     if (!cachedAppStorage) {
         console.error(`failed to set ${key}, appStorage was not loaded from DB`);
