@@ -76,3 +76,39 @@ export function getPersistentStorage(key) {
     }
     return cachedAppStorage?.[key];
 }
+
+export class Player {
+
+    play(url) {
+        this.url = url;
+        console.log(`-----------play: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}`);
+        if (this.url && window.cefQuery) {
+            window.cefQuery({
+                request: JSON.stringify({ url: this.url, action: "play"}),
+                persistent: true,
+                onSuccess: (response) => {
+                    console.log("success: " + response);
+                },
+                onFailure: (code, msg) => {
+                    console.log(`failure: ${code} ${msg}`);
+                }
+            });
+        }
+    }
+
+    resume() {
+        console.log(`-----------resume: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}`);
+        if (this.url && window.cefQuery) {
+            window.cefQuery({
+                request: JSON.stringify({ url: this.url, action: "resume"}),
+                persistent: true,
+                onSuccess: (response) => {
+                    console.log("success: " + response);
+                },
+                onFailure: (code, msg) => {
+                    console.log(`failure: ${code} ${msg}`);
+                }
+            });
+        }
+    }
+}
