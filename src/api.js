@@ -3,6 +3,7 @@ const communityManagerService = "hyperscale-community-manager:9092";
 let cachedAppStorage;
 let tenant;
 let deviceId;
+let playbackPosition = window.playbackPosition || 0.0;
 
 async function loadAppStorageFromDb() {
     const {sessionInfo:sessionInfoStr} = diagnostics() || {};
@@ -81,10 +82,11 @@ export class Player {
 
     play(url) {
         this.url = url;
-        console.log(`-----------play: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}`);
+        playbackPosition = window.playbackPosition || 0.0;
+        console.log(`-----------play: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}, playbackPosition = ${playbackPosition}`);
         if (this.url && window.cefQuery) {
             window.cefQuery({
-                request: JSON.stringify({ url: this.url, action: "play"}),
+                request: JSON.stringify({ url: this.url, action: "play", playbackPosition}),
                 persistent: true,
                 onSuccess: (response) => {
                     console.log("success: " + response);
@@ -97,10 +99,10 @@ export class Player {
     }
 
     resume() {
-        console.log(`-----------resume: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}`);
+        console.log(`-----------resume: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}, playbackPosition = ${playbackPosition}`);
         if (this.url && window.cefQuery) {
             window.cefQuery({
-                request: JSON.stringify({ url: this.url, action: "resume"}),
+                request: JSON.stringify({ url: this.url, action: "resume", playbackPosition}),
                 persistent: true,
                 onSuccess: (response) => {
                     console.log("success: " + response);
