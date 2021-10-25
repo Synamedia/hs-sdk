@@ -27,6 +27,11 @@ async function loadAppStorageFromDb() {
     }
     try {
         const response = await fetch(`http://${communityManagerService}/devices/1.0/tenant/${tenant}/resourceId/${deviceId}`);
+        if (response.status === 404) {
+            console.info("deviceId don't have");
+            return;
+        }
+        hasDB=true
         const data = await response.json();
         cachedAppStorage = data?.appStorage;
     } catch (err) {
