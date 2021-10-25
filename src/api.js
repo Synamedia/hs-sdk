@@ -4,6 +4,7 @@ let cachedAppStorage;
 let tenant;
 let deviceId;
 let playbackPosition;
+let hasDB=false
 
 async function loadAppStorageFromDb() {
     const {sessionInfo:sessionInfoStr} = diagnostics() || {};
@@ -36,6 +37,10 @@ async function loadAppStorageFromDb() {
 export function init() {
     console.log("hs-sdk init");
     return loadAppStorageFromDb();
+}
+        
+export function deviceHasDB() {
+    return hasDB
 }
 
 export function diagnostics() {
