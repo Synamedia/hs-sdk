@@ -3,7 +3,7 @@ const communityManagerService = "hyperscale-community-manager:9092";
 let cachedAppStorage;
 let tenant;
 let deviceId;
-let playbackPosition = window.playbackPosition || 0.0;
+let playbackPosition;
 
 async function loadAppStorageFromDb() {
     const {sessionInfo:sessionInfoStr} = diagnostics() || {};
