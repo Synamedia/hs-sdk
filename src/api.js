@@ -87,6 +87,29 @@ export function getPersistentStorage(key) {
     return cachedAppStorage?.[key];
 }
 
+export function getPlaybackInfo() {
+    const playbackInfoStr = window.getPlaybackInfo ? window.getPlaybackInfo() : "{}";
+    let playbackInfo = {};
+    try {
+        playbackInfo = JSON.parse(playbackInfoStr);
+    } catch (e) {
+        console.error(`Playabck Info parse failed. playbackStr = ${playbackInfoStr}`);
+    }
+
+    return playbackInfo;
+}
+
+export function setPlaybackInfo(playbackInfo) {
+
+    try {
+        const playbackInfoStr = JSON.stringify(playbackInfo);
+        window.setPlaybackInfo(playbackInfoStr);
+    } catch (e) {
+        console.error(`Playabck Info to json string failed`);
+    }
+
+}
+
 export class Player {
 
     play(url) {
