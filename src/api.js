@@ -112,6 +112,10 @@ export function setPlaybackInfo(playbackInfo) {
 
 export class Player {
 
+    constructor(state) {
+        this.url=state.playbackUrl;
+    }
+
     play(url) {
         this.url = url;
         console.log(`-----------play: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}`);
