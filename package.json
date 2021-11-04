@@ -1,6 +1,6 @@
 {
     "name": "@ip-synamedia/hs-sdk",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "main": "./dist/index.js",
     "description": "API for Hyperscale application",
     "author": "Foxboro",
