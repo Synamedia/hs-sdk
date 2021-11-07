@@ -52,15 +52,18 @@ export function diagnostics() {
 }
 
 export function setSessionStorage(key, value) {
-    window.hsStorageSetItem(key, value);
+    const storage=window.hsStorageSetItem ?? window.localStorage.setItem;
+    storage(key, value);
 }
 
 export function getSessionStorage(key) {
-    return window.hsStorageGetItem(key);
+    const storage=window.hsStorageGetItem ?? window.localStorage.getItem;
+    return storage(key);
 }
 
 export function clearSessionStorage() {
-    return window.hsStorageSetItem("state", "{}");
+   console.info("clearSessionStorage")
+   return setSessionStorage("state", "{}");
 }
 
 export async function setPersistentStorage(key, value) {
