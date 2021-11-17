@@ -90,8 +90,9 @@ export function getPersistentStorage(key) {
     return cachedAppStorage?.[key];
 }
 
+let mockPlaybackInfo = {playbackPosition: 0, assetDuration: 0};
 export function getPlaybackInfo() {
-    const playbackInfoStr = window.getPlaybackInfo ? window.getPlaybackInfo() : "{}";
+    const playbackInfoStr = window.getPlaybackInfo ? window.getPlaybackInfo() : JSON.stringify(mockPlaybackInfo);
     let playbackInfo = {};
     try {
         playbackInfo = JSON.parse(playbackInfoStr);
@@ -106,7 +107,11 @@ export function setPlaybackInfo(playbackInfo) {
 
     try {
         const playbackInfoStr = JSON.stringify(playbackInfo);
-        window.setPlaybackInfo(playbackInfoStr);
+        if (window.setPlaybackInfo) {
+            window.setPlaybackInfo(playbackInfoStr);
+        } else {
+            mockPlaybackInfo = playbackInfo;
+        }
     } catch (e) {
         console.error(`Playabck Info to json string failed`);
     }
