@@ -3,7 +3,7 @@ const communityManagerService = "hyperscale-community-manager:9092";
 let cachedAppStorage;
 let tenant;
 let deviceId;
-let hasDB=false
+let hasDB = false;
 
 async function loadAppStorageFromDb() {
     const {sessionInfo:sessionInfoStr} = diagnostics() || {};
@@ -25,12 +25,12 @@ async function loadAppStorageFromDb() {
         return;
     }
     try {
-        const response = await fetch(`http://${communityManagerService}/devices/1.0/tenant/${tenant}/resourceId/${deviceId}`);
+        const response = await fetch(`http://${communityManagerService}/devices/1.0/${deviceId}`);
         if (response.status === 404) {
-            console.info("deviceId don't have");
+            console.info(`deviceId ${deviceId} doesn't exist in DB`);
             return;
         }
-        hasDB=true
+        hasDB = true;
         const data = await response.json();
         cachedAppStorage = data?.appStorage;
     } catch (err) {
@@ -42,9 +42,9 @@ export function init() {
     console.log("hs-sdk init");
     return loadAppStorageFromDb();
 }
-        
+
 export function deviceHasDB() {
-    return hasDB
+    return hasDB;
 }
 
 export function diagnostics() {
