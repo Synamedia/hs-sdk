@@ -74,7 +74,7 @@ export async function setPersistentStorage(key, value) {
     try {
         const appStorage = {[key]: value};
         const options = {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({appStorage})};
-        const response = await fetch(`http://${communityManagerService}/devices/1.0/tenant/${tenant}/resourceId/${deviceId}`, options);
+        const response = await fetch(`http://${communityManagerService}/devices/1.0/${deviceId}`, options);
         if (response?.status === 200) {
             cachedAppStorage[key] = value;
         }
