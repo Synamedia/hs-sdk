@@ -51,19 +51,6 @@ export function diagnostics() {
     return typeof window !== "undefined" && window.diagnostics ? window.diagnostics() : undefined;
 }
 
-export function setSessionStorage(key, value) {
-    window.sessionStorage.setItem(key, value);
-}
-
-export function getSessionStorage(key) {
-    return window.sessionStorage.getItem(key);
-}
-
-export function clearSessionStorage() {
-   console.info("clearSessionStorage");
-   return setSessionStorage("state", "{}");
-}
-
 export async function setPersistentStorage(key, value) {
     if (!cachedAppStorage) {
         console.error(`failed to set ${key}, appStorage was not loaded from DB`);
