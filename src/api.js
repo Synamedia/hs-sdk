@@ -60,7 +60,7 @@ export function getSessionStorage(key) {
 }
 
 export function clearSessionStorage() {
-   console.info("clearSessionStorage")
+   console.info("clearSessionStorage");
    return setSessionStorage("state", "{}");
 }
 
@@ -116,42 +116,34 @@ export function setPlaybackInfo(playbackInfo) {
 
 }
 
-export class Player {
-
-    constructor(state) {
-        this.url=state.playbackUrl;
+export function play(url) {
+    console.log(`-----------play: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
+    if (url && window.cefQuery) {
+        window.cefQuery({
+            request: JSON.stringify({ url, action: "play"}),
+            persistent: true,
+            onSuccess: (response) => {
+                console.log("success: " + response);
+            },
+            onFailure: (code, msg) => {
+                console.log(`failure: ${code} ${msg}`);
+            }
+        });
     }
+}
 
-    play(url) {
-        this.url = url;
-        console.log(`-----------play: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}`);
-        if (this.url && window.cefQuery) {
-            window.cefQuery({
-                request: JSON.stringify({ url: this.url, action: "play"}),
-                persistent: true,
-                onSuccess: (response) => {
-                    console.log("success: " + response);
-                },
-                onFailure: (code, msg) => {
-                    console.log(`failure: ${code} ${msg}`);
-                }
-            });
-        }
-    }
-
-    resume() {
-        console.log(`-----------resume: playbackUrl = ${this.url}, window.cefQuery = ${window.cefQuery}`);
-        if (this.url && window.cefQuery) {
-            window.cefQuery({
-                request: JSON.stringify({ url: this.url, action: "resume"}),
-                persistent: true,
-                onSuccess: (response) => {
-                    console.log("success: " + response);
-                },
-                onFailure: (code, msg) => {
-                    console.log(`failure: ${code} ${msg}`);
-                }
-            });
-        }
+export function resume(url) {
+    console.log(`-----------resume: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
+    if (url && window.cefQuery) {
+        window.cefQuery({
+            request: JSON.stringify({ url, action: "resume"}),
+            persistent: true,
+            onSuccess: (response) => {
+                console.log(`success: ${response}`);
+            },
+            onFailure: (code, msg) => {
+                console.log(`failure: ${code} ${msg}`);
+            }
+        });
     }
 }
