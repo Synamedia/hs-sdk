@@ -52,13 +52,11 @@ export function diagnostics() {
 }
 
 export function setSessionStorage(key, value) {
-    const storage=window.hsStorageSetItem ?? window.localStorage.setItem;
-    storage(key, value);
+    window.sessionStorage.setItem(key, value);
 }
 
 export function getSessionStorage(key) {
-    const storage=window.hsStorageGetItem ?? window.localStorage.getItem;
-    return storage(key);
+    return window.sessionStorage.getItem(key);
 }
 
 export function clearSessionStorage() {
