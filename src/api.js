@@ -48,7 +48,39 @@ export function deviceHasDB() {
 }
 
 export function diagnostics() {
+    console.warn("diagnostics is deprecated, use platform info");
     return typeof window !== "undefined" && window.diagnostics ? window.diagnostics() : undefined;
+}
+
+export function getPlatformInfo() {
+    console.info("getPlatformInfo");
+    if (window?.diagnostics) {
+        try {
+            const platformInfo = window.diagnostics();
+            platformInfo.sessionInfo = JSON.parse(platformInfo.sessionInfo);
+            return platformInfo;
+        } catch (e){
+            console.info("Could not get getPlatformInfo",e.stack);
+        }
+
+    } else {
+        console.info("Working on local env (not HS platfrom) - return dummy info");
+        return {
+            tenant: "XXXXXXX-XXXXXXX-XXXX",
+            version: "X.X.XX-X",
+            pod: "ui-streamer-X.X.XX-X-QWERT-ASDFG-XXX-XXXXXX-XXXXX",
+            podIP: "0.0.0.0",
+            sessionInfo: {
+                userAgent: "SynamediaHyperscale/XX.YY.ZZ",
+                connectionId: "dummy",
+                deviceId: "123456789",
+                community: "LocalDev",
+                appConnectionId: "dummy_a~App",
+                manifest: {
+                    transcontainer: "X.X.XX-X"
+                }}
+        };
+    }
 }
 
 export async function setPersistentStorage(key, value) {
