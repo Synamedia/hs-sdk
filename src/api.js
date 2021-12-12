@@ -166,3 +166,19 @@ export function resume(url) {
         });
     }
 }
+
+export const player = {
+    resume,
+    play,
+    get currentTime (){
+        const playbackInfo = getPlaybackInfo();
+        return playbackInfo?.playbackPosition;
+    },
+    set currentTime(playbackPosition) {
+        setPlaybackInfo({playbackPosition});
+    },
+    get duration() {
+        const playbackInfo = getPlaybackInfo();
+        return playbackInfo?.assetDuration;
+    }
+};
