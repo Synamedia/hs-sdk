@@ -1,6 +1,6 @@
 {
     "name": "@ip-synamedia/hs-sdk",
-    "version": "1.3.1",
+    "version": "1.4.1",
     "main": "./dist/api.js",
     "description": "API for Hyperscale application",
     "license": "MIT",

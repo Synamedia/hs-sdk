@@ -59,8 +59,8 @@ export function getPlatformInfo() {
             const platformInfo = window.diagnostics();
             platformInfo.sessionInfo = JSON.parse(platformInfo.sessionInfo);
             return platformInfo;
-        } catch (e){
-            console.info("Could not get getPlatformInfo",e.stack);
+        } catch (e) {
+            console.info("Could not get getPlatformInfo", e.stack);
         }
 
     } else {
@@ -135,9 +135,25 @@ export function setPlaybackInfo(playbackInfo) {
 
 }
 
-export function play(url) {
-    console.log(`-----------play: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
+export function load(url) {
+    console.log(`-----------load: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
     if (url && window.cefQuery) {
+        window.cefQuery({
+            request: JSON.stringify({ url, action: "load"}),
+            persistent: true,
+            onSuccess: (response) => {
+                console.log("success: " + response);
+            },
+            onFailure: (code, msg) => {
+                console.log(`failure: ${code} ${msg}`);
+            }
+        });
+    }
+}
+
+export function play(url = "") {
+    console.log(`-----------play: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
+    if (window.cefQuery) {
         window.cefQuery({
             request: JSON.stringify({ url, action: "play"}),
             persistent: true,
@@ -168,6 +184,7 @@ export function resume(url) {
 }
 
 export const player = {
+    load,
     resume,
     play,
     get currentTime (){
