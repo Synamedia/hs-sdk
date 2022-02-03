@@ -6,16 +6,9 @@ let deviceId;
 let hasDB = false;
 
 async function loadAppStorageFromDb() {
-    const {sessionInfo:sessionInfoStr} = diagnostics() || {};
-    if (!sessionInfoStr) {
-        console.error("cannot load appStorage from DB, sessionInfo information is missing");
-        return;
-    }
-    let sessionInfo;
-    try {
-        sessionInfo = JSON.parse(sessionInfoStr);
-    } catch (err) {
-        console.error("cannot load appStorage from DB, failed to parse sessionInfo");
+    const {sessionInfo} = getPlatformInfo();
+    if (!sessionInfo) {
+        console.error("cannot load appStorage from DB, sessionInfo is missing");
         return;
     }
     tenant = sessionInfo.tenant;
@@ -48,23 +41,22 @@ export function deviceHasDB() {
 }
 
 export function diagnostics() {
-    console.warn("diagnostics is deprecated, use platform info");
+    console.warn("diagnostics is deprecated, use getPlatformInfo");
     return typeof window !== "undefined" && window.diagnostics ? window.diagnostics() : undefined;
 }
 
 export function getPlatformInfo() {
-    console.info("getPlatformInfo");
-    if (window?.diagnostics) {
+    if (typeof window !== "undefined" && window.diagnostics) {
         try {
-            const platformInfo = window.diagnostics();
-            platformInfo.sessionInfo = JSON.parse(platformInfo.sessionInfo);
+            const platformInfo = window.diagnostics() || {};
+            platformInfo.sessionInfo = JSON.parse(platformInfo.sessionInfo || "{}");
             return platformInfo;
         } catch (e) {
-            console.info("Could not get getPlatformInfo", e.stack);
+            console.error("Could not get platform info", e.stack);
         }
 
     } else {
-        console.info("Working on local env (not HS platfrom) - return dummy info");
+        console.info("Working on local env (not HS platform) - return dummy info");
         return {
             tenant: "XXXXXXX-XXXXXXX-XXXX",
             version: "X.X.XX-X",
@@ -78,7 +70,9 @@ export function getPlatformInfo() {
                 appConnectionId: "dummy_a~App",
                 manifest: {
                     transcontainer: "X.X.XX-X"
-                }}
+                },
+                settings: {}
+            }
         };
     }
 }
