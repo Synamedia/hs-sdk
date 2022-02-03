@@ -56,7 +56,7 @@ export function getPlatformInfo() {
         }
 
     } else {
-        console.info("Working on local env (not HS platform) - return dummy info");
+        //console.info("Working on local env (not HS platform) - return dummy info");
         return {
             tenant: "XXXXXXX-XXXXXXX-XXXX",
             version: "X.X.XX-X",
