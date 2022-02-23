@@ -1,11 +1,11 @@
-name: PR Workflow
+name: Publish package
 on:
   push:
     branches:
       - master
 
     # Manual run
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   Run_test:
@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: '16.13.0'
       - run: npm ci
+      - name: "set version to prerelease"
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: npm version prerelease
       - name: "publish to artifactory"
         run: |
           export NPM_USER='cloudcinpmdpl.gen'
