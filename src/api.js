@@ -30,9 +30,26 @@ async function loadAppStorageFromDb() {
         console.error(err);
     }
 }
-
-export function init() {
+let sessionInfo = "{}";
+export async function init() {
     console.log("hs-sdk init");
+
+    if (window.cefQuery) {
+        sessionInfo = await (new Promise((resolve, reject) => {
+            window.cefQuery && window.cefQuery({
+                request: "sessionInfo",
+                persistent: false,
+                onSuccess: (response) => {
+                    console.log("success: " + response);
+                    resolve(response);
+                },
+                onFailure: (code, msg) => {
+                    console.log(`failure: ${code} ${msg}`);
+                }
+            });
+        }));
+    }
+
     return loadAppStorageFromDb();
 }
 
@@ -49,7 +66,7 @@ export function getPlatformInfo() {
     if (typeof window !== "undefined" && window.diagnostics) {
         try {
             const platformInfo = window.diagnostics() || {};
-            platformInfo.sessionInfo = JSON.parse(platformInfo.sessionInfo || "{}");
+            platformInfo.sessionInfo = JSON.parse(sessionInfo);
             return platformInfo;
         } catch (e) {
             console.error("Could not get platform info", e.stack);
