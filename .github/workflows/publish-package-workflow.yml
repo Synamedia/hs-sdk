@@ -1,0 +1,33 @@
+name: PR Workflow
+on:
+  push:
+    branches:
+      - master
+
+    # Manual run
+    workflow_dispatch:
+
+jobs:
+  Run_test:
+    runs-on: EngIT
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.0'
+          cache: 'npm'
+      - run: npm ci
+      - name: "publish to artifactory"
+        run: |
+          export NPM_USER='cloudcinpmdpl.gen'
+          export NPM_PASSWORD='Infinite&123'
+          curl -u "${NPM_USER}:${NPM_PASSWORD}" "https://artifactory01.engit.synamedia.com/artifactory/api/npm/auth" > .npmrc
+          npm publish --registry https://artifactory01.engit.synamedia.com/artifactory/api/npm/spvss-cloud-ci-npm
+
+
+
