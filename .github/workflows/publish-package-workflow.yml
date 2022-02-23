@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
       - name: "set version to prerelease"
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: npm version prerelease
+        run: npm version --no-git-tag-version prerelease
       - name: "publish to artifactory"
         run: |
           export NPM_USER='cloudcinpmdpl.gen'
