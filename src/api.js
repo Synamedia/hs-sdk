@@ -57,7 +57,13 @@ export function getPlatformInfo() {
                 manifest: {
                     transcontainer: "X.X.XX-X"
                 },
-                settings: {}
+                settings: {
+                    webUI: {
+                        backendHeaders: {
+                            Authorization: "Bearer dummytoken"
+                        }
+                    }
+                }
             }
         };
     }
