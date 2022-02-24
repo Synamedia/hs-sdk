@@ -4,6 +4,9 @@ let cachedAppStorage;
 let tenant;
 let deviceId;
 let hasDB = false;
+let authToken;
+
+
 
 async function loadAppStorageFromDb() {
     const {sessionInfo} = getPlatformInfo();
@@ -33,7 +36,13 @@ async function loadAppStorageFromDb() {
 let sessionInfo = "{}";
 export async function init() {
     console.log("hs-sdk init");
+    authToken = getPlatformInfo().sessionInfo?.settings?.webUI?.backendHeaders?.Authorization;
+    // Listen to updateSession event to set the new token
+    document.addEventListener("updateSession", (e) => {
+        authToken = e.detail?.updateObj;;
+        console.log(`-----------onUpdateSessionEvent: token= ${authToken}`);
 
+    });
     if (window.cefQuery) {
         sessionInfo = await (new Promise((resolve, reject) => {
             window.cefQuery && window.cefQuery({
@@ -49,7 +58,6 @@ export async function init() {
             });
         }));
     }
-
     return loadAppStorageFromDb();
 }
 
@@ -193,6 +201,63 @@ export function resume(url) {
         });
     }
 }
+
+
+/** Reaching the function only in case of 401 unauthorized  **/
+function forceTokenUpdate() {
+    const FCID = Math.round(Math.random()*10000) + "-"+ getPlatformInfo().sessionInfo?.connectionId
+    console.log(`-----------forceTokenUpdate: window.cefQuery = ${window.cefQuery}, FCID = ${FCID}`);
+
+    authToken = null;
+    console.log(`-----------setToken: token= ${authToken}`);
+
+    if (window.cefQuery) {
+        window.cefQuery({
+            request: JSON.stringify({ action: "authenticate", fcid: `${FCID}`}),
+            persistent: false,
+            onSuccess: (response) => {
+                console.log("success: " + response);
+            },
+            onFailure: (code, msg) => {
+                console.log(`failure: ${code} ${msg}`);
+            }
+        });
+    }
+    else {
+        console.error(`window.cefQuery is undefined`);
+    }
+}
+
+async function getToken() {
+
+    console.log(`-----------getToken: `);
+
+    if (!authToken) {
+        console.log(`-----------getToken wait for promise updateSession event`);
+        return new Promise((resolve) => {
+            // Listen to updateSession event to set the new token
+            document.addEventListener("updateSession", (e) => {
+                authToken = e.detail?.updateObj;
+                console.log(`-----------onUpdateSessionEvent: token= ${authToken}`);
+                resolve(authToken);
+            }, {once:true});
+        });
+    }
+    console.log(`--------------getToken token = ${authToken}`)
+    return Promise.resolve(authToken);
+
+}
+
+
+export const auth = {
+    /** triggered upon '401' event */
+    forceTokenUpdate,
+
+    /** upon startups, make generic for 3d party, instead of current usage with diagnostics->session info it will simply call the getToken and will embed it in its future requests */
+    getToken
+
+};
+
 
 export const player = {
     load,
