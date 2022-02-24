@@ -1,45 +1,11 @@
-const communityManagerService = "hyperscale-community-manager:9092";
-
-let cachedAppStorage;
-let tenant;
-let deviceId;
-let hasDB = false;
 let authToken;
-
-
-
-async function loadAppStorageFromDb() {
-    const {sessionInfo} = getPlatformInfo();
-    if (!sessionInfo) {
-        console.error("cannot load appStorage from DB, sessionInfo is missing");
-        return;
-    }
-    tenant = sessionInfo.tenant;
-    deviceId = sessionInfo.deviceId;
-    if (!tenant || !deviceId) {
-        console.error("cannot load appStorage from DB, either tenant or deviceId information is missing");
-        return;
-    }
-    try {
-        const response = await fetch(`http://${communityManagerService}/devices/1.0/${deviceId}`);
-        if (response.status === 404) {
-            console.info(`deviceId ${deviceId} doesn't exist in DB`);
-            return;
-        }
-        hasDB = true;
-        const data = await response.json();
-        cachedAppStorage = data?.appStorage;
-    } catch (err) {
-        console.error(err);
-    }
-}
 let sessionInfo = "{}";
 export async function init() {
     console.log("hs-sdk init");
     authToken = getPlatformInfo().sessionInfo?.settings?.webUI?.backendHeaders?.Authorization;
     // Listen to updateSession event to set the new token
     document.addEventListener("updateSession", (e) => {
-        authToken = e.detail?.updateObj;;
+        authToken = e.detail?.updateObj;
         console.log(`-----------onUpdateSessionEvent: token= ${authToken}`);
 
     });
@@ -58,11 +24,6 @@ export async function init() {
             });
         }));
     }
-    return loadAppStorageFromDb();
-}
-
-export function deviceHasDB() {
-    return hasDB;
 }
 
 export function diagnostics() {
@@ -100,30 +61,6 @@ export function getPlatformInfo() {
             }
         };
     }
-}
-
-export async function setPersistentStorage(key, value) {
-    if (!cachedAppStorage) {
-        console.error(`failed to set ${key}, appStorage was not loaded from DB`);
-        return;
-    }
-    try {
-        const appStorage = {[key]: value};
-        const options = {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({appStorage})};
-        const response = await fetch(`http://${communityManagerService}/devices/1.0/${deviceId}`, options);
-        if (response?.status === 200) {
-            cachedAppStorage[key] = value;
-        }
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-export function getPersistentStorage(key) {
-    if (!cachedAppStorage) {
-        console.error(`failed to get ${key}, appStorage was not loaded from DB`);
-    }
-    return cachedAppStorage?.[key];
 }
 
 let mockPlaybackInfo = {playbackPosition: 0, assetDuration: 0};
@@ -202,10 +139,9 @@ export function resume(url) {
     }
 }
 
-
 /** Reaching the function only in case of 401 unauthorized  **/
 function forceTokenUpdate() {
-    const FCID = Math.round(Math.random()*10000) + "-"+ getPlatformInfo().sessionInfo?.connectionId
+    const FCID = Math.round(Math.random() * 10000) + "-" + getPlatformInfo().sessionInfo?.connectionId;
     console.log(`-----------forceTokenUpdate: window.cefQuery = ${window.cefQuery}, FCID = ${FCID}`);
 
     authToken = null;
@@ -222,8 +158,7 @@ function forceTokenUpdate() {
                 console.log(`failure: ${code} ${msg}`);
             }
         });
-    }
-    else {
+    } else {
         console.error(`window.cefQuery is undefined`);
     }
 }
@@ -243,13 +178,13 @@ async function getToken() {
             }, {once:true});
         });
     }
-    console.log(`--------------getToken token = ${authToken}`)
+    console.log(`--------------getToken token = ${authToken}`);
     return Promise.resolve(authToken);
 
 }
 
-
 export const auth = {
+
     /** triggered upon '401' event */
     forceTokenUpdate,
 
@@ -257,7 +192,6 @@ export const auth = {
     getToken
 
 };
-
 
 export const player = {
     load,
