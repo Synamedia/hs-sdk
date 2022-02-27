@@ -27,7 +27,9 @@ export async function init() {
             authToken = e.detail?.updateObj;
             console.log(`-----------onUpdateSessionEvent: token= ${authToken}`);
         });
-
+    } else {
+        authToken = getPlatformInfo().sessionInfo?.settings?.webUI?.backendHeaders?.Authorization;
+        console.log(`-----------authToken dummy: token= ${authToken}`);
     }
 }
 
