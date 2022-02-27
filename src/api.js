@@ -2,13 +2,7 @@ let authToken;
 let sessionInfo = "{}";
 export async function init() {
     console.log("hs-sdk init");
-    authToken = getPlatformInfo().sessionInfo?.settings?.webUI?.backendHeaders?.Authorization;
-    // Listen to updateSession event to set the new token
-    document.addEventListener("updateSession", (e) => {
-        authToken = e.detail?.updateObj;
-        console.log(`-----------onUpdateSessionEvent: token= ${authToken}`);
 
-    });
     if (window.cefQuery) {
         sessionInfo = await (new Promise((resolve, reject) => {
             window.cefQuery && window.cefQuery({
@@ -16,13 +10,24 @@ export async function init() {
                 persistent: false,
                 onSuccess: (response) => {
                     console.log("success: " + response);
-                    resolve(response);
+                   resolve(response);
                 },
                 onFailure: (code, msg) => {
                     console.log(`failure: ${code} ${msg}`);
                 }
             });
         }));
+
+        console.log(`-----------sessionInfo: sessionInfo= ${sessionInfo}`);
+        let sessionInfoObj = JSON.parse(sessionInfo);
+        authToken = sessionInfoObj?.settings?.webUI?.backendHeaders?.Authorization;
+        console.log(`-----------authToken: token= ${authToken}`);
+        // Listen to updateSession event to set the new token
+        document.addEventListener("updateSession", (e) => {
+            authToken = e.detail?.updateObj;
+            console.log(`-----------onUpdateSessionEvent: token= ${authToken}`);
+        });
+
     }
 }
 
