@@ -77,7 +77,8 @@ const shakaPlayerHandler = {
     }
 };
 
-exports.hsShakaPlayer = function hsShakaPlayer(ShakaInstance) {
+exports.isRunningE2E = isE2E;
+exports.CreateInstance = function CreateInstance(ShakaInstance) {
 
     ShakaInstance.addEventListener("onstatechange", (e) => {
         if (e.state === "load") {

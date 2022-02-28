@@ -102,9 +102,6 @@ function forceTokenUpdate() {
 }
 
 async function getToken() {
-
-    console.log(`-----------getToken: `);
-
     if (!authToken) {
         console.log(`-----------getToken wait for promise updateSession event`);
         return new Promise((resolve) => {
@@ -116,9 +113,7 @@ async function getToken() {
             }, {once:true});
         });
     }
-    console.log(`--------------getToken token = ${authToken}`);
     return Promise.resolve(authToken);
-
 }
 
 export const auth = {
@@ -126,7 +121,7 @@ export const auth = {
     /** triggered upon '401' event */
     forceTokenUpdate,
 
-    /** upon startups, make generic for 3d party, instead of current usage with diagnostics->session info it will simply call the getToken and will embed it in its future requests */
+    /** upon startups, make generic for 3rd party, instead of current usage with diagnostics->session info it will simply call the getToken and will embed it in its future requests */
     getToken
 
 };
