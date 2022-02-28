@@ -1,16 +1,17 @@
 let authToken;
 let sessionInfo = "{}";
+
 export async function init() {
     console.log("hs-sdk init");
 
     if (window.cefQuery) {
-        sessionInfo = await (new Promise((resolve, reject) => {
+        sessionInfo = await (new Promise((resolve) => {
             window.cefQuery && window.cefQuery({
                 request: "sessionInfo",
                 persistent: false,
                 onSuccess: (response) => {
                     console.log("success: " + response);
-                   resolve(response);
+                    resolve(response);
                 },
                 onFailure: (code, msg) => {
                     console.log(`failure: ${code} ${msg}`);
@@ -19,7 +20,7 @@ export async function init() {
         }));
 
         console.log(`-----------sessionInfo: sessionInfo= ${sessionInfo}`);
-        let sessionInfoObj = JSON.parse(sessionInfo);
+        const sessionInfoObj = JSON.parse(sessionInfo);
         authToken = sessionInfoObj?.settings?.webUI?.backendHeaders?.Authorization;
         console.log(`-----------authToken: token= ${authToken}`);
         // Listen to updateSession event to set the new token
@@ -73,82 +74,6 @@ export function getPlatformInfo() {
                 }
             }
         };
-    }
-}
-
-let mockPlaybackInfo = {playbackPosition: 0, assetDuration: 0};
-export function getPlaybackInfo() {
-    const playbackInfoStr = window.getPlaybackInfo ? window.getPlaybackInfo() : JSON.stringify(mockPlaybackInfo);
-    let playbackInfo = {};
-    try {
-        playbackInfo = JSON.parse(playbackInfoStr);
-    } catch (e) {
-        console.error(`Playabck Info parse failed. playbackStr = ${playbackInfoStr}`);
-    }
-
-    return playbackInfo;
-}
-
-export function setPlaybackInfo(playbackInfo) {
-
-    try {
-        const playbackInfoStr = JSON.stringify(playbackInfo);
-        if (window.setPlaybackInfo) {
-            window.setPlaybackInfo(playbackInfoStr);
-        } else {
-            mockPlaybackInfo = playbackInfo;
-        }
-    } catch (e) {
-        console.error(`Playabck Info to json string failed`);
-    }
-
-}
-
-export function load(url) {
-    console.log(`-----------load: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
-    if (url && window.cefQuery) {
-        window.cefQuery({
-            request: JSON.stringify({ url, action: "load"}),
-            persistent: true,
-            onSuccess: (response) => {
-                console.log("success: " + response);
-            },
-            onFailure: (code, msg) => {
-                console.log(`failure: ${code} ${msg}`);
-            }
-        });
-    }
-}
-
-export function play(url = "") {
-    console.log(`-----------play: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
-    if (window.cefQuery) {
-        window.cefQuery({
-            request: JSON.stringify({ url, action: "play"}),
-            persistent: true,
-            onSuccess: (response) => {
-                console.log("success: " + response);
-            },
-            onFailure: (code, msg) => {
-                console.log(`failure: ${code} ${msg}`);
-            }
-        });
-    }
-}
-
-export function resume(url) {
-    console.log(`-----------resume: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
-    if (url && window.cefQuery) {
-        window.cefQuery({
-            request: JSON.stringify({ url, action: "resume"}),
-            persistent: true,
-            onSuccess: (response) => {
-                console.log(`success: ${response}`);
-            },
-            onFailure: (code, msg) => {
-                console.log(`failure: ${code} ${msg}`);
-            }
-        });
     }
 }
 
@@ -206,19 +131,5 @@ export const auth = {
 
 };
 
-export const player = {
-    load,
-    resume,
-    play,
-    get currentTime (){
-        const playbackInfo = getPlaybackInfo();
-        return playbackInfo?.playbackPosition;
-    },
-    set currentTime(playbackPosition) {
-        setPlaybackInfo({playbackPosition});
-    },
-    get duration() {
-        const playbackInfo = getPlaybackInfo();
-        return playbackInfo?.assetDuration;
-    }
-};
+export const remotePlayer = require("./remotePlayer");
+export const hsShakaPlayer = require("./hsShakaPlayer");
