@@ -52,7 +52,6 @@ export function getPlatformInfo() {
     } else {
         //console.info("Working on local env (not HS platform) - return dummy info");
         return {
-            tenant: "XXXXXXX-XXXXXXX-XXXX",
             version: "X.X.XX-X",
             pod: "ui-streamer-X.X.XX-X-QWERT-ASDFG-XXX-XXXXXX-XXXXX",
             podIP: "0.0.0.0",
@@ -62,6 +61,7 @@ export function getPlatformInfo() {
                 deviceId: "123456789",
                 community: "LocalDev",
                 appConnectionId: "dummy_a~App",
+                tenant: "XXXXXX",
                 manifest: {
                     transcontainer: "X.X.XX-X"
                 },
