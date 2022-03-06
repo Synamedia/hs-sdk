@@ -126,5 +126,8 @@ export const auth = {
 
 };
 
+// an indication that we are running in an e2e environment, with ui-streamer and transcontainer
+export const isRunningE2E = !!(typeof window !== "undefined" && window.cefQuery);
+
 export const remotePlayer = require("./remotePlayer");
-export const hsShakaPlayer = require("./hsShakaPlayer");
+export const HsShakaPlayer = require("./hsShakaPlayer");

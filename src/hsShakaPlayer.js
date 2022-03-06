@@ -1,4 +1,4 @@
-import { getPlatformInfo } from "./api";
+import { getPlatformInfo, isRunningE2E } from "./api";
 const remotePlayer = require("./remotePlayer");
 
 let remotePlaybackAfterSeconds = 0;
@@ -20,9 +20,6 @@ function saveLoadedUrlInSessionStorage(loadedUrl) {
     window.sessionStorage.setItem('state', state);
 }
 
-// an indication that we are running in an e2e environment, with ui-streamer and transcontainer
-const isE2E = !!(typeof window !== "undefined" && window.cefQuery);
-
 let playerTimerId = 0;
 let shakaPlayerMediaElement;
 
@@ -33,7 +30,7 @@ const shakaPlayerHandler = {
                 apply: (target, thisArg, argumentsList) => {
                     const loadedUrl = getLoadedUrlFromSessionStorage();
                     console.log(`---ON load of ${argumentsList[0]}, loaded url = ${loadedUrl}`);
-                    if (isE2E && argumentsList && argumentsList[0]) {
+                    if (isRunningE2E && argumentsList && argumentsList[0]) {
                         if (playerTimerId > 0) {
                             clearTimeout(playerTimerId);
                             playerTimerId = 0;
@@ -58,7 +55,7 @@ const shakaPlayerHandler = {
             return new Proxy(target[property], {
                 apply: (target, thisArg, argumentsList) => {
                     console.log(`---ON ${property} of ${thisArg.getAssetUri()}`);
-                    if (isE2E && thisArg.getAssetUri()) {
+                    if (isRunningE2E && thisArg.getAssetUri()) {
                         if (playerTimerId > 0) {
                             clearTimeout(playerTimerId);
                             playerTimerId = 0;
@@ -77,8 +74,7 @@ const shakaPlayerHandler = {
     }
 };
 
-exports.isRunningE2E = isE2E;
-exports.CreateInstance = function CreateInstance(ShakaInstance) {
+module.exports = function HsShakaPlayer(ShakaInstance) {
 
     ShakaInstance.addEventListener("onstatechange", (e) => {
         if (e.state === "load") {
@@ -103,7 +99,7 @@ exports.CreateInstance = function CreateInstance(ShakaInstance) {
                 // If remotePlaybackAfterSeconds is set to 0 it means that we want to switch to remote player immediately
                 // (as opposed to playing locally for a few seconds and then switch to remote player). In this case, we
                 // want to avoid flickering so we mute and hide the local player media element.
-                if (isE2E && remotePlaybackAfterSeconds === 0) {
+                if (isRunningE2E && remotePlaybackAfterSeconds === 0) {
                     shakaPlayerMediaElement.muted = true;
                     shakaPlayerMediaElement.setAttribute("style", "visibility: hidden;");
                 }
@@ -117,7 +113,7 @@ exports.CreateInstance = function CreateInstance(ShakaInstance) {
                 });
                 shakaPlayerMediaElement.addEventListener("seeked", () => {
                     console.log("---ON seeked to position", shakaPlayerMediaElement.currentTime);
-                    if (isE2E) {
+                    if (isRunningE2E) {
                         const currentTime = remotePlayer.currentTime;
                         console.log("Remote player position =", currentTime);
                         if (currentTime?.toFixed(3) !== shakaPlayerMediaElement.currentTime.toFixed(3)) {
@@ -127,7 +123,7 @@ exports.CreateInstance = function CreateInstance(ShakaInstance) {
                 });
                 shakaPlayerMediaElement.addEventListener("play", () => {
                     console.log("---ON play of", ShakaInstance.getAssetUri());
-                    if (isE2E && ShakaInstance.getAssetUri()) {
+                    if (isRunningE2E && ShakaInstance.getAssetUri()) {
                         if (remotePlaybackAfterSeconds > 0) {
                             if (playerTimerId > 0) {
                                 clearTimeout(playerTimerId);
