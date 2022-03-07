@@ -5,19 +5,19 @@ let remotePlaybackAfterSeconds = 0;
 
 // TODO: move it to top level of sessionStorage once ui-streamer supports it (currently needs to be under 'state')
 function getLoadedUrlFromSessionStorage() {
-    let state = window.sessionStorage.getItem('state');
+    let state = window.sessionStorage.getItem("state");
     state = state || "{}";
     state = JSON.parse(state);
     return state.hyperscaleLoadedUrl;
 }
 
 function saveLoadedUrlInSessionStorage(loadedUrl) {
-    let state = window.sessionStorage.getItem('state');
+    let state = window.sessionStorage.getItem("state");
     state = state || "{}";
     state = JSON.parse(state);
     state.hyperscaleLoadedUrl = loadedUrl;
     state = JSON.stringify(state);
-    window.sessionStorage.setItem('state', state);
+    window.sessionStorage.setItem("state", state);
 }
 
 let playerTimerId = 0;

@@ -5,7 +5,7 @@ export async function init() {
     console.log("hs-sdk init");
 
     if (window.cefQuery) {
-        sessionInfo = await (new Promise((resolve) => {
+        sessionInfo = await new Promise((resolve) => {
             window.cefQuery && window.cefQuery({
                 request: "sessionInfo",
                 persistent: false,
@@ -17,7 +17,7 @@ export async function init() {
                     console.log(`failure: ${code} ${msg}`);
                 }
             });
-        }));
+        });
 
         console.log(`-----------sessionInfo: sessionInfo= ${sessionInfo}`);
         const sessionInfoObj = JSON.parse(sessionInfo);
@@ -97,13 +97,13 @@ function forceTokenUpdate() {
             }
         });
     } else {
-        console.error(`window.cefQuery is undefined`);
+        console.error("window.cefQuery is undefined");
     }
 }
 
 async function getToken() {
     if (!authToken) {
-        console.log(`-----------getToken wait for promise updateSession event`);
+        console.log("-----------getToken wait for promise updateSession event");
         return new Promise((resolve) => {
             // Listen to updateSession event to set the new token
             document.addEventListener("updateSession", (e) => {

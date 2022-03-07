@@ -1,0 +1,69 @@
+{
+  "tenant": "hyperscale-stackpath-prod",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.0.0 Safari/537.36",
+  "flow_context": "791103",
+  "community": "Alpha",
+  "connectionId": "alphaWdVnsSmW5E",
+  "deviceId": "alpha",
+  "settings": {
+    "ui-streamer": {
+      "enableVariantVbv": true,
+      "vbv2bitrateRatio": 4
+    },
+    "webUI": {
+      "useHostPlatformAuthentication": true,
+      "idleTimeout": 30000,
+      "surveyFeature": false,
+      "surveyPopupTime": 3600000,
+      "storeStateInLocalStorage": true,
+      "idleBannerTimeout": 300000,
+      "assetPlayerDelay": 2000,
+      "showThumbnails": true,
+      "hideBannerBg": true,
+      "backendHeaders": {
+        "Authorization": "Bearer eyJraWQiOiI4ZGU0OWQ4Mi05ODU3LTRiZDAtYmY5NS1lMjEwZmZkN2E0NTgiLCJqa3UiOiJodHRwczovL3NnLWdvbGRlbmJlcnJ5LnZzc2Nsb3VkLnR2Ojk0NDMvb2F1dGgyL2p3a3M_a2lkPThkZTQ5ZDgyLTk4NTctNGJkMC1iZjk1LWUyMTBmZmQ3YTQ1OCIsImFsZyI6IlJTMjU2In0.eyJpYXQiOjE2NDY1Njg3OTUsInN1YiI6IlNZTkFIT01FLmFscGhhX0hIIiwiYXVkIjoiaXZwLnNlc3Npb25ndWFyZCIsImV4cCI6MTY0NzE3MzU5NSwic2Vzc2lvbl9kYXRhIjp7InNlc3Npb24iOnsiY29tbXVuaXR5IjoiTElWRSIsImJ1c1VuaXRJZCI6IlNZTkFIT01FIiwic2NvcGUiOiJicm93c2UgcGxheWJhY2siLCJ1cElkIjoiU1lOQUhPTUUuYWxwaGFfSEhfMCIsImRldklkIjoiYWxwaGEiLCJyZWdpb24iOiI3MTAwMCIsImNtZGNSZWdpb24iOiI3MDAwMH43MTAwMCIsImRldmljZUZlYXR1cmVzIjpbIkFCUiIsIlBFUlNPTkFMLUNPTVBVVEVSIiwiVU5NQU5BR0VEIiwiREFTSCIsIldWLURSTSIsIlNlY29uZFNjcmVlbiJdLCJjbWRjRGV2aWNlVHlwZSI6IlBDIiwiZGV2aWNlVHlwZSI6IkNPTVBBTklPTiIsInRlbmFudCI6ImsiLCJzb2x1dGlvbklkIjoiayIsInRlbmFudElkIjoiREVNTyIsImd1ZXN0TW9kZSI6ZmFsc2UsImhoSWQiOiJTWU5BSE9NRS5hbHBoYV9ISCJ9LCJoaEhhc2giOjExLCJjb21tdW5pdHkiOiJMSVZFIn0sInNjb3BlIjoiYnJvd3NlIHBsYXliYWNrIiwidG9rZW5fdHlwZSI6ImFjY2Vzc190b2tlbiIsInNzYV9qdGkiOiJTWU5BSE9NRS1BbmRyb2lkIiwiY2xpZW50X2lkIjoiMDIuU1lOQUhPTUUtQW5kcm9pZC4xMjMiLCJqdGkiOiI1NWQ4ZWFmMy1lMTNkLTQ2MjEtOGIxNC0zNTk5MjRmZTI1OGYifQ.b8qVh8PJBG2b6vy_18s95pNjxadsDQyGV0l5C-KCBqTr0e_6cLBCeYo636g3RZC54WG7_Kg-gjARQ3lFw8bFGrqbwSlmRlKqWtlcD4OeM5WIS9EmLWC0ICW_ku8X5754IqF5YM5GSC-aYKnh1HisK-Kp5y8YYvXuMbaw645b5gTQ-2dVN5qDZje9U0dyC8HwHMQgtrSggvuLOMHjL6mElLAEc2zoBtU0dYTChXXV7ZfpOd7_LOJUl5urKpYYxHw3uRYE3WnhAdpEPhSaJ6-AaT3n-vQKvbHzegiVpg5iTRbEIt3WwsmEODgOPvKdHJF8pY0hM3g0YhgCPXKplFAx_Q"
+      }
+    },
+    "transcontainer": {
+      "transcontainer": {
+        "uiReleaseAfterMinutes": 2
+      },
+      "abrPlayer": {
+        "manifestMinBitrate": 200,
+        "manifestMaxBitrate": 3500,
+        "subtitles": {
+          "enabled": true
+        },
+        "bitrateControl": {
+          "minValidNackPercentage": 1,
+          "maxValidNackPercentage": 6,
+          "failureThreshold": 2,
+          "successThreshold": 3
+        },
+        "rateControl": {
+          "fastStreamingRate": 1.12,
+          "slowStreamingRate": 0.75
+        }
+      },
+      "webRtcClient": {
+        "bitrateControl": {
+          "minValidNackPercentage": 0.5,
+          "maxValidNackPercentage": 3
+        }
+      }
+    }
+  },
+  "manifest": {
+    "transcontainer": "22.1.5-5",
+    "ui-streamer": "2.0.1-0",
+    "ui-app": "https://hyperscale-webui.vsscloud.tv/1.1.1-62-ga1d5/",
+    "device-app": "http://hs-device-software.s3.eu-west-1.amazonaws.com/22.09.4",
+    "app-manager": "http://a1f6ad5da4adb4cf4af6b8cbca732c2b-8c54b852dba6a984.elb.eu-west-1.amazonaws.com",
+    "hs-sec-authn": "1.0.63-0",
+    "hs-sec-authz": "1.0.71-0",
+    "hs-sec-jwtv": "1.0.58-0",
+    "hyperscale-op-manager": "2.1.1-0",
+    "persistent-storage-manager": "1.0.38-0"
+  },
+  "profile": "hyperscale-stackpath-prod"
+}

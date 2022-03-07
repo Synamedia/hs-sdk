@@ -1,0 +1,23 @@
+{
+  "version": "X.X.XX-X",
+  "pod": "ui-streamer-X.X.XX-X-QWERT-ASDFG-XXX-XXXXXX-XXXXX",
+  "podIP": "0.0.0.0",
+  "sessionInfo": {
+    "userAgent": "SynamediaHyperscale/XX.YY.ZZ",
+    "connectionId": "dummy",
+    "deviceId": "123456789",
+    "community": "LocalDev",
+    "appConnectionId": "dummy_a~App",
+    "tenant": "XXXXXX",
+    "manifest": {
+      "transcontainer": "X.X.XX-X"
+    },
+    "settings": {
+      "webUI": {
+        "backendHeaders": {
+          "Authorization": "Bearer dummytoken"
+        }
+      }
+    }
+  }
+}

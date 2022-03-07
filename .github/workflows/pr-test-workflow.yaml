@@ -1,0 +1,25 @@
+name: Test PR
+on:
+  pull_request:
+    branches:
+      - master
+
+    # Manual run
+  workflow_dispatch:
+
+jobs:
+  Run_test:
+    runs-on: EngIT
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.0'
+      - run: npm i
+      - run: npm run eslint
+      - run: npm test

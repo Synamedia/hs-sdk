@@ -22,7 +22,7 @@ function setPlaybackInfo(playbackInfo) {
             mockPlaybackInfo = playbackInfo;
         }
     } catch (e) {
-        console.error(`Playback Info to json string failed`);
+        console.error("Playback Info to json string failed");
     }
 
 }

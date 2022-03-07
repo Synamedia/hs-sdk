@@ -1,6 +1,6 @@
 {
     "name": "@ip-synamedia/hs-sdk",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "main": "./dist/api.js",
     "description": "API for Hyperscale application",
     "license": "MIT",
@@ -8,18 +8,27 @@
         "type": "git",
         "url": "git@github-chf01.synamedia.com:hyperscale/hs-sdk.git"
     },
-    "dependencies": {},
     "scripts": {
         "clean": "rm -rf dist",
         "prepublish": "npm run build",
-        "eslint": "eslint --fix src",
+        "eslint": "eslint --max-warnings 0  src test",
         "compile": "babel src -d dist",
-        "build": "npm run clean && npm run compile"
+        "build": "npm run clean && npm run compile",
+        "test": "jest --coverage"
     },
     "devDependencies": {
         "@babel/cli": "^7.13.16",
         "@babel/core": "^7.14.0",
+        "@babel/plugin-transform-modules-commonjs": "^7.16.8",
         "@babel/preset-env": "^7.14.1",
-        "eslint": "^7.26.0"
+        "babel-jest": "^27.5.1",
+        "eslint": "^7.32.0",
+        "eslint-plugin-jest": "^26.1.1",
+        "jest": "^27.5.1"
+    },
+    "jest": {
+        "verbose": false,
+        "testEnvironment": "jsdom",
+        "moduleDirectories": ["src","node_modules"]
     }
 }
