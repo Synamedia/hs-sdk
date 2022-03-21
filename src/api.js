@@ -1,6 +1,16 @@
 let authToken;
 let sessionInfo = "{}";
 
+export const auth = {
+
+    /** triggered upon '401' event */
+    forceTokenUpdate,
+
+    /** upon startups, make generic for 3rd party, instead of current usage with diagnostics->session info it will simply call the getToken and will embed it in its future requests */
+    getToken
+
+};
+
 export async function init() {
     console.log("hs-sdk init");
 
@@ -32,6 +42,9 @@ export async function init() {
         authToken = getPlatformInfo().sessionInfo?.settings?.webUI?.backendHeaders?.Authorization;
         console.log(`-----------authToken dummy: token= ${authToken}`);
     }
+
+    // Adding auth to window for testing purpose which allows us to use and test auth APIs in pipeline tests
+    window.auth = auth;
 }
 
 export function diagnostics() {
@@ -115,16 +128,6 @@ async function getToken() {
     }
     return Promise.resolve(authToken);
 }
-
-export const auth = {
-
-    /** triggered upon '401' event */
-    forceTokenUpdate,
-
-    /** upon startups, make generic for 3rd party, instead of current usage with diagnostics->session info it will simply call the getToken and will embed it in its future requests */
-    getToken
-
-};
 
 // an indication that we are running in an e2e environment, with ui-streamer and transcontainer
 export const isRunningE2E = !!(typeof window !== "undefined" && window.cefQuery);
