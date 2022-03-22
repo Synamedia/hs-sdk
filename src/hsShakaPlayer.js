@@ -1,7 +1,7 @@
 import { getPlatformInfo, isRunningE2E } from "./api";
 const remotePlayer = require("./remotePlayer");
 
-let remotePlaybackAfterSeconds = 0;
+const remotePlaybackAfterSeconds = getPlatformInfo().sessionInfo?.settings?.webUI?.remotePlaybackAfterSeconds ?? 0;
 
 // TODO: move it to top level of sessionStorage once ui-streamer supports it (currently needs to be under 'state')
 function getLoadedUrlFromSessionStorage() {
@@ -22,14 +22,49 @@ function saveLoadedUrlInSessionStorage(loadedUrl) {
 
 let playerTimerId = 0;
 let shakaPlayerMediaElement;
+let isPlaying = false;
+
+if (typeof window !== "undefined") {
+    document.addEventListener("keydown", (event) => {
+        if (shakaPlayerMediaElement && isRunningE2E && isPlaying) {
+            const currentTime = remotePlayer.currentTime;
+            console.log(`Got ${event.key} key. Updating local player to ${currentTime}`);
+            isPlaying = false;
+            shakaPlayerMediaElement.currentTime = currentTime;
+        }
+    });
+    document.addEventListener("EOS", () => {
+        console.log("---ON EOS");
+        if (shakaPlayerMediaElement && isRunningE2E) {
+            isPlaying = false;
+            const currentTime = remotePlayer.currentTime;
+            console.log(`Updating local player to ${currentTime}`);
+            shakaPlayerMediaElement.currentTime = currentTime;
+            shakaPlayerMediaElement.dispatchEvent(new CustomEvent("ended"));
+        }
+    });
+    document.addEventListener("ERR", (event) => {
+        console.log("---ON ERR", event.detail);
+        if (shakaPlayerMediaElement && isRunningE2E) {
+            isPlaying = false;
+            const currentTime = remotePlayer.currentTime;
+            console.log(`Updating local player to ${currentTime}`);
+            shakaPlayerMediaElement.currentTime = currentTime;
+            shakaPlayerMediaElement.dispatchEvent(new CustomEvent("error", event));
+        }
+    });
+}
 
 const shakaPlayerHandler = {
     get: function (target, property) {
         if (property === "load") {
             return new Proxy(target[property], {
                 apply: (target, thisArg, argumentsList) => {
-                    const loadedUrl = getLoadedUrlFromSessionStorage();
-                    console.log(`---ON load of ${argumentsList[0]}, loaded url = ${loadedUrl}`);
+                    console.log(`---ON load of ${argumentsList[0]}`);
+                    if (shakaPlayerMediaElement.autoplay) {
+                        console.warn("AUTOPLAY IS NOT SUPPORTED!!! Setting autoplay to false");
+                        shakaPlayerMediaElement.autoplay = false;
+                    }
                     if (isRunningE2E && argumentsList && argumentsList[0]) {
                         if (playerTimerId > 0) {
                             clearTimeout(playerTimerId);
@@ -37,18 +72,26 @@ const shakaPlayerHandler = {
                         }
                         // If the UI is trying to load a url that is already loaded, we don't want to call the remote player's load.
                         // This can happen when the UI is reloaded after uiRelease and it calls Shaka player's load.
+                        const loadedUrl = getLoadedUrlFromSessionStorage();
+                        console.log(`loadedUrl = ${loadedUrl}`);
                         if (loadedUrl !== argumentsList[0]) {
-                            if (loadedUrl) {
-                                remotePlayer.unload(loadedUrl);
-                            }
                             remotePlayer.load(argumentsList[0]);
-                            if (argumentsList.length > 1 && argumentsList[1] > 0) {
-                                remotePlayer.currentTime = argumentsList[1];
-                            }
                             saveLoadedUrlInSessionStorage(argumentsList[0]);
                         }
+                        if (argumentsList.length > 1 && argumentsList[1] > 0) {
+                            console.log("Setting remote and local players current time to", argumentsList[1]);
+                            remotePlayer.currentTime = argumentsList[1];
+                            shakaPlayerMediaElement.currentTime = argumentsList[1];
+                        }
                     }
-                    return Reflect.apply(target, thisArg, argumentsList);
+                    const loadPromise = Reflect.apply(target, thisArg, argumentsList);
+                    loadPromise.catch(err => {
+                        console.log(`Caught load error ${err.code} in SDK`);
+                        if (isRunningE2E) {
+                            saveLoadedUrlInSessionStorage(undefined);
+                        }
+                    });
+                    return loadPromise;
                 }
             });
         } else if (property === "unload" || property === "detach") {
@@ -60,8 +103,7 @@ const shakaPlayerHandler = {
                             clearTimeout(playerTimerId);
                             playerTimerId = 0;
                         }
-                        remotePlayer.unload(thisArg.getAssetUri());
-                        saveLoadedUrlInSessionStorage(undefined); // undefined or ""?
+                        saveLoadedUrlInSessionStorage(undefined);
                     }
                     return Reflect.apply(target, thisArg, argumentsList);
                 }
@@ -75,6 +117,17 @@ const shakaPlayerHandler = {
 };
 
 module.exports = function HsShakaPlayer(ShakaInstance) {
+    const playHandler = async () => {
+        console.log(`video tag PLAY, isPlaying = ${isPlaying}, local player current time = ${shakaPlayerMediaElement.currentTime}`);
+        if (!isRunningE2E) {
+            return shakaPlayerMediaElement.origPlay.bind(shakaPlayerMediaElement)();
+        }
+        if (!isPlaying) {
+            isPlaying = true;
+            remotePlayer.currentTime = shakaPlayerMediaElement.currentTime;
+            return remotePlayer.play();
+        }
+    };
 
     ShakaInstance.addEventListener("onstatechange", (e) => {
         if (e.state === "load") {
@@ -90,27 +143,19 @@ module.exports = function HsShakaPlayer(ShakaInstance) {
             const mediaElement = ShakaInstance.getMediaElement();
             console.log("mediaElement", mediaElement);
             if (mediaElement && shakaPlayerMediaElement !== mediaElement) {
-                console.log("Adding event listeners");
-                // if (shakaPlayerMediaElement) {
-                //     // remove all event listeners
-                // }
+                // TODO: if shakaPlayerMediaElement exists, need to remove all previously added event listeners
                 shakaPlayerMediaElement = mediaElement;
-                remotePlaybackAfterSeconds = getPlatformInfo().sessionInfo?.settings?.webUI?.remotePlaybackAfterSeconds ?? remotePlaybackAfterSeconds;
+                shakaPlayerMediaElement.origPlay = mediaElement.play;
+                shakaPlayerMediaElement.play = playHandler;
                 // If remotePlaybackAfterSeconds is set to 0 it means that we want to switch to remote player immediately
                 // (as opposed to playing locally for a few seconds and then switch to remote player). In this case, we
-                // want to avoid flickering so we mute and hide the local player media element.
+                // want to avoid flickering so we hide the local player media element.
                 if (isRunningE2E && remotePlaybackAfterSeconds === 0) {
-                    shakaPlayerMediaElement.muted = true;
                     shakaPlayerMediaElement.setAttribute("style", "visibility: hidden;");
                 }
-                document.addEventListener("EOS", () => {
-                    console.log("---ON EOS");
-                    shakaPlayerMediaElement.dispatchEvent(new CustomEvent("ended"));
-                });
-                document.addEventListener("ERR", (event) => {
-                    console.log("---ON ERR", event.detail);
-                    shakaPlayerMediaElement.dispatchEvent(new CustomEvent("error", event));
-                });
+                // Currently all event listeners are commented out since remotePlaybackAfterSeconds is set to 0
+                // and shaka player is not playing.
+                /*console.log("Adding event listeners");
                 shakaPlayerMediaElement.addEventListener("seeked", () => {
                     console.log("---ON seeked to position", shakaPlayerMediaElement.currentTime);
                     if (isRunningE2E) {
@@ -156,7 +201,7 @@ module.exports = function HsShakaPlayer(ShakaInstance) {
                         clearTimeout(playerTimerId);
                         playerTimerId = 0;
                     }
-                });
+                });*/
             }
         }
     });

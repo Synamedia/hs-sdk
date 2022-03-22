@@ -1,33 +1,26 @@
-let mockPlaybackInfo = {playbackPosition: 0, assetDuration: 0};
-
-
 function getPlaybackInfo() {
-    const playbackInfoStr = window.getPlaybackInfo ? window.getPlaybackInfo() : JSON.stringify(mockPlaybackInfo);
+    const playbackInfoStr = window.getPlaybackInfo ? window.getPlaybackInfo() : JSON.stringify({playbackPosition: 0, assetDuration: 0});
     let playbackInfo = {};
     try {
         playbackInfo = JSON.parse(playbackInfoStr);
     } catch (e) {
         console.error(`Playback Info parse failed. playbackStr = ${playbackInfoStr}`);
+        playbackInfo = {playbackPosition: 0, assetDuration: 0};
     }
 
     return playbackInfo;
 }
 
 function setPlaybackInfo(playbackInfo) {
-
     try {
         const playbackInfoStr = JSON.stringify(playbackInfo);
         if (window.setPlaybackInfo) {
             window.setPlaybackInfo(playbackInfoStr);
-        } else {
-            mockPlaybackInfo = playbackInfo;
         }
     } catch (e) {
         console.error("Playback Info to json string failed");
     }
-
 }
-
 
 function resume(url) {
     console.log(`-----------resume: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
@@ -49,7 +42,7 @@ function resume(url) {
  *@example
  * import { remotePlayer } from "@ip-synamedia/hs-sdk";
  **/
-export const remotePlayer = {
+const remotePlayer = {
     /**
      * Load URL to remote player
      * @param {string} url - playable URL
@@ -59,25 +52,6 @@ export const remotePlayer = {
         if (url && window.cefQuery) {
             window.cefQuery({
                 request: JSON.stringify({ url, action: "load"}),
-                persistent: false,
-                onSuccess: (response) => {
-                    console.log("success: " + response);
-                },
-                onFailure: (code, msg) => {
-                    console.log(`failure: ${code} ${msg}`);
-                }
-            });
-        }
-    },
-    /**
-     * Unload remote player
-     * @param {string} url - playable URL
-     */
-    unload:function unload(url) {
-        console.log(`-----------unload: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
-        if (url && window.cefQuery) {
-            window.cefQuery({
-                request: JSON.stringify({ url, action: "unload"}),
                 persistent: false,
                 onSuccess: (response) => {
                     console.log("success: " + response);
@@ -116,8 +90,7 @@ export const remotePlayer = {
      * Getter/Setter for currentTime
      */
     get currentTime () {
-        const playbackInfo = getPlaybackInfo();
-        return playbackInfo?.playbackPosition;
+        return getPlaybackInfo()?.playbackPosition;
     },
     set currentTime(playbackPosition) {
         setPlaybackInfo({playbackPosition});
@@ -128,7 +101,8 @@ export const remotePlayer = {
      * @readonly
      */
     get duration() {
-        const playbackInfo = getPlaybackInfo();
-        return playbackInfo?.assetDuration;
+        return getPlaybackInfo()?.assetDuration;
     }
 };
+
+module.exports = remotePlayer;
