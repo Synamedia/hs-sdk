@@ -22,22 +22,6 @@ function setPlaybackInfo(playbackInfo) {
     }
 }
 
-function resume(url) {
-    console.log(`-----------resume: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
-    if (url && window.cefQuery) {
-        window.cefQuery({
-            request: JSON.stringify({ url, action: "resume"}),
-            persistent: false,
-            onSuccess: (response) => {
-                console.log(`success: ${response}`);
-            },
-            onFailure: (code, msg) => {
-                console.log(`failure: ${code} ${msg}`);
-            }
-        });
-    }
-}
-
 /** @namespace remotePlayer
  *@example
  * import { remotePlayer } from "@ip-synamedia/hs-sdk";
@@ -65,11 +49,11 @@ const remotePlayer = {
     /**
      * Play loaded URL. Assuming load was called before.
      */
-    play: function play(url = "") {
-        console.log(`-----------play: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
+    play: function play() {
+        console.log(`-----------play: window.cefQuery = ${window.cefQuery}`);
         if (window.cefQuery) {
             window.cefQuery({
-                request: JSON.stringify({ url, action: "play"}),
+                request: JSON.stringify({ action: "play"}),
                 persistent: false,
                 onSuccess: (response) => {
                     console.log("success: " + response);
@@ -80,12 +64,6 @@ const remotePlayer = {
             });
         }
     },
-    /**
-     * @deprecated
-     */
-    resume,
-
-
     /**
      * Getter/Setter for currentTime
      */
