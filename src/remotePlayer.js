@@ -53,7 +53,7 @@ const remotePlayer = {
         console.log(`-----------play: window.cefQuery = ${window.cefQuery}`);
         if (window.cefQuery) {
             window.cefQuery({
-                request: JSON.stringify({ action: "play"}),
+                request: JSON.stringify({ url: "", action: "play"}),
                 persistent: false,
                 onSuccess: (response) => {
                     console.log("success: " + response);
