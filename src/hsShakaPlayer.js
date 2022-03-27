@@ -87,8 +87,9 @@ const shakaPlayerHandler = {
                     const loadPromise = Reflect.apply(target, thisArg, argumentsList);
                     loadPromise.catch(err => {
                         console.log(`Caught load error ${err.code} in SDK`);
-                        if (isRunningE2E) {
+                        if (isRunningE2E && argumentsList && argumentsList[0]) {
                             saveLoadedUrlInSessionStorage(undefined);
+                            remotePlayer.unload(argumentsList[0]);
                         }
                     });
                     return loadPromise;
