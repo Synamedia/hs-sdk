@@ -104,6 +104,7 @@ const shakaPlayerHandler = {
                             playerTimerId = 0;
                         }
                         saveLoadedUrlInSessionStorage(undefined);
+                        remotePlayer.unload(thisArg.getAssetUri());
                     }
                     return Reflect.apply(target, thisArg, argumentsList);
                 }

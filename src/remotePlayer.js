@@ -47,6 +47,25 @@ const remotePlayer = {
         }
     },
     /**
+     * Unload URL from remote player
+     * @param {string} url - playable URL
+     */
+    unload: function unload(url) {
+        console.log(`-----------unload: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
+        if (url && window.cefQuery) {
+            window.cefQuery({
+                request: JSON.stringify({ url, action: "unload"}),
+                persistent: false,
+                onSuccess: (response) => {
+                    console.log("success: " + response);
+                },
+                onFailure: (code, msg) => {
+                    console.log(`failure: ${code} ${msg}`);
+                }
+            });
+        }
+    },
+    /**
      * Play loaded URL. Assuming load was called before.
      */
     play: function play() {
