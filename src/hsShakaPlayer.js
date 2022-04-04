@@ -2,23 +2,7 @@ import { getPlatformInfo, isRunningE2E } from "./api";
 const remotePlayer = require("./remotePlayer");
 
 const remotePlaybackAfterSeconds = getPlatformInfo().sessionInfo?.settings?.webUI?.remotePlaybackAfterSeconds ?? 0;
-
-// TODO: move it to top level of sessionStorage once ui-streamer supports it (currently needs to be under 'state')
-function getLoadedUrlFromSessionStorage() {
-    let state = window.sessionStorage.getItem("state");
-    state = state || "{}";
-    state = JSON.parse(state);
-    return state.hyperscaleLoadedUrl;
-}
-
-function saveLoadedUrlInSessionStorage(loadedUrl) {
-    let state = window.sessionStorage.getItem("state");
-    state = state || "{}";
-    state = JSON.parse(state);
-    state.hyperscaleLoadedUrl = loadedUrl;
-    state = JSON.stringify(state);
-    window.sessionStorage.setItem("state", state);
-}
+const LOADED_URL_KEY = "hs-internal/loadedUrl";
 
 let playerTimerId = 0;
 let shakaPlayerMediaElement;
@@ -72,11 +56,10 @@ const shakaPlayerHandler = {
                         }
                         // If the UI is trying to load a url that is already loaded, we don't want to call the remote player's load.
                         // This can happen when the UI is reloaded after uiRelease and it calls Shaka player's load.
-                        const loadedUrl = getLoadedUrlFromSessionStorage();
-                        console.log(`loadedUrl = ${loadedUrl}`);
-                        if (loadedUrl !== argumentsList[0]) {
+                        console.log(`loadedUrl = ${window.sessionStorage.getItem(LOADED_URL_KEY)}`);
+                        if (window.sessionStorage.getItem(LOADED_URL_KEY) !== argumentsList[0]) {
                             remotePlayer.load(argumentsList[0]);
-                            saveLoadedUrlInSessionStorage(argumentsList[0]);
+                            window.sessionStorage.setItem(LOADED_URL_KEY, argumentsList[0]);
                         }
                         if (argumentsList.length > 1 && argumentsList[1] > 0) {
                             console.log("Setting remote and local players current time to", argumentsList[1]);
@@ -88,7 +71,7 @@ const shakaPlayerHandler = {
                     loadPromise.catch(err => {
                         console.log(`Caught load error ${err.code} in SDK`);
                         if (isRunningE2E() && argumentsList && argumentsList[0]) {
-                            saveLoadedUrlInSessionStorage(undefined);
+                            window.sessionStorage.removeItem(LOADED_URL_KEY);
                             remotePlayer.unload(argumentsList[0]);
                         }
                     });
@@ -104,7 +87,7 @@ const shakaPlayerHandler = {
                             clearTimeout(playerTimerId);
                             playerTimerId = 0;
                         }
-                        saveLoadedUrlInSessionStorage(undefined);
+                        window.sessionStorage.removeItem(LOADED_URL_KEY);
                         remotePlayer.unload(thisArg.getAssetUri());
                     }
                     return Reflect.apply(target, thisArg, argumentsList);
