@@ -26,7 +26,7 @@ let isPlaying = false;
 
 if (typeof window !== "undefined") {
     document.addEventListener("keydown", (event) => {
-        if (shakaPlayerMediaElement && isRunningE2E && isPlaying) {
+        if (shakaPlayerMediaElement && isRunningE2E() && isPlaying) {
             const currentTime = remotePlayer.currentTime;
             console.log(`Got ${event.key} key. Updating local player to ${currentTime}`);
             isPlaying = false;
@@ -35,7 +35,7 @@ if (typeof window !== "undefined") {
     });
     document.addEventListener("EOS", () => {
         console.log("---ON EOS");
-        if (shakaPlayerMediaElement && isRunningE2E) {
+        if (shakaPlayerMediaElement && isRunningE2E()) {
             isPlaying = false;
             const currentTime = remotePlayer.currentTime;
             console.log(`Updating local player to ${currentTime}`);
@@ -45,7 +45,7 @@ if (typeof window !== "undefined") {
     });
     document.addEventListener("ERR", (event) => {
         console.log("---ON ERR", event.detail);
-        if (shakaPlayerMediaElement && isRunningE2E) {
+        if (shakaPlayerMediaElement && isRunningE2E()) {
             isPlaying = false;
             const currentTime = remotePlayer.currentTime;
             console.log(`Updating local player to ${currentTime}`);
@@ -65,7 +65,7 @@ const shakaPlayerHandler = {
                         console.warn("AUTOPLAY IS NOT SUPPORTED!!! Setting autoplay to false");
                         shakaPlayerMediaElement.autoplay = false;
                     }
-                    if (isRunningE2E && argumentsList && argumentsList[0]) {
+                    if (isRunningE2E() && argumentsList && argumentsList[0]) {
                         if (playerTimerId > 0) {
                             clearTimeout(playerTimerId);
                             playerTimerId = 0;
@@ -87,7 +87,7 @@ const shakaPlayerHandler = {
                     const loadPromise = Reflect.apply(target, thisArg, argumentsList);
                     loadPromise.catch(err => {
                         console.log(`Caught load error ${err.code} in SDK`);
-                        if (isRunningE2E && argumentsList && argumentsList[0]) {
+                        if (isRunningE2E() && argumentsList && argumentsList[0]) {
                             saveLoadedUrlInSessionStorage(undefined);
                             remotePlayer.unload(argumentsList[0]);
                         }
@@ -99,7 +99,7 @@ const shakaPlayerHandler = {
             return new Proxy(target[property], {
                 apply: (target, thisArg, argumentsList) => {
                     console.log(`---ON ${property} of ${thisArg.getAssetUri()}`);
-                    if (isRunningE2E && thisArg.getAssetUri()) {
+                    if (isRunningE2E() && thisArg.getAssetUri()) {
                         if (playerTimerId > 0) {
                             clearTimeout(playerTimerId);
                             playerTimerId = 0;
@@ -121,7 +121,7 @@ const shakaPlayerHandler = {
 module.exports = function HsShakaPlayer(ShakaInstance) {
     const playHandler = async () => {
         console.log(`video tag PLAY, isPlaying = ${isPlaying}, local player current time = ${shakaPlayerMediaElement.currentTime}`);
-        if (!isRunningE2E) {
+        if (!isRunningE2E()) {
             return shakaPlayerMediaElement.origPlay.bind(shakaPlayerMediaElement)();
         }
         if (!isPlaying) {
@@ -152,7 +152,7 @@ module.exports = function HsShakaPlayer(ShakaInstance) {
                 // If remotePlaybackAfterSeconds is set to 0 it means that we want to switch to remote player immediately
                 // (as opposed to playing locally for a few seconds and then switch to remote player). In this case, we
                 // want to avoid flickering so we hide the local player media element.
-                if (isRunningE2E && remotePlaybackAfterSeconds === 0) {
+                if (isRunningE2E() && remotePlaybackAfterSeconds === 0) {
                     shakaPlayerMediaElement.setAttribute("style", "visibility: hidden;");
                 }
                 // Currently all event listeners are commented out since remotePlaybackAfterSeconds is set to 0
@@ -160,7 +160,7 @@ module.exports = function HsShakaPlayer(ShakaInstance) {
                 /*console.log("Adding event listeners");
                 shakaPlayerMediaElement.addEventListener("seeked", () => {
                     console.log("---ON seeked to position", shakaPlayerMediaElement.currentTime);
-                    if (isRunningE2E) {
+                    if (isRunningE2E()) {
                         const currentTime = remotePlayer.currentTime;
                         console.log("Remote player position =", currentTime);
                         if (currentTime?.toFixed(3) !== shakaPlayerMediaElement.currentTime.toFixed(3)) {
@@ -170,7 +170,7 @@ module.exports = function HsShakaPlayer(ShakaInstance) {
                 });
                 shakaPlayerMediaElement.addEventListener("play", () => {
                     console.log("---ON play of", ShakaInstance.getAssetUri());
-                    if (isRunningE2E && ShakaInstance.getAssetUri()) {
+                    if (isRunningE2E() && ShakaInstance.getAssetUri()) {
                         if (remotePlaybackAfterSeconds > 0) {
                             if (playerTimerId > 0) {
                                 clearTimeout(playerTimerId);
