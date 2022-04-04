@@ -130,7 +130,9 @@ async function getToken() {
 }
 
 // an indication that we are running in an e2e environment, with ui-streamer and transcontainer
-export const isRunningE2E = !!(typeof window !== "undefined" && window.cefQuery);
+export function isRunningE2E() {
+    return !!(typeof window !== "undefined" && window.cefQuery);
+}
 
 export const remotePlayer = require("./remotePlayer");
 export const HsShakaPlayer = require("./hsShakaPlayer");
