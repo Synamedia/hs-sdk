@@ -45,7 +45,7 @@ const shakaPlayerHandler = {
             return new Proxy(target[property], {
                 apply: (target, thisArg, argumentsList) => {
                     console.log(`---ON load of ${argumentsList[0]}`);
-                    if (shakaPlayerMediaElement.autoplay) {
+                    if (shakaPlayerMediaElement?.autoplay) {
                         console.warn("AUTOPLAY IS NOT SUPPORTED!!! Setting autoplay to false");
                         shakaPlayerMediaElement.autoplay = false;
                     }
@@ -64,7 +64,9 @@ const shakaPlayerHandler = {
                         if (argumentsList.length > 1 && argumentsList[1] > 0) {
                             console.log("Setting remote and local players current time to", argumentsList[1]);
                             remotePlayer.currentTime = argumentsList[1];
-                            shakaPlayerMediaElement.currentTime = argumentsList[1];
+                            if (shakaPlayerMediaElement) {
+                                shakaPlayerMediaElement.currentTime = argumentsList[1];
+                            }
                         }
                     }
                     const loadPromise = Reflect.apply(target, thisArg, argumentsList);

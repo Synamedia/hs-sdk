@@ -1,16 +1,25 @@
 let authToken;
 let sessionInfo = "{}";
 
+/** @namespace auth
+ *@example
+ * import { auth } from "@ip-synamedia/hs-sdk";
+ **/
 export const auth = {
 
-    /** triggered upon '401' event */
+    /** Should be called upon '401' event (unauthorized) */
     forceTokenUpdate,
 
-    /** upon startups, make generic for 3rd party, instead of current usage with diagnostics->session info it will simply call the getToken and will embed it in its future requests */
+    /** Should be called upon startup and be embedded in future requests */
     getToken
 
 };
 
+/** Should be called once to init the library
+ *@example
+ * import { init } from '@ip-synamedia/hs-sdk';
+ * await init()
+ **/
 export async function init() {
     console.log("hs-sdk init");
 
@@ -47,11 +56,7 @@ export async function init() {
     window.auth = auth;
 }
 
-export function diagnostics() {
-    console.warn("diagnostics is deprecated, use getPlatformInfo");
-    return typeof window !== "undefined" && window.diagnostics ? window.diagnostics() : undefined;
-}
-
+/** Returns the platform information, such as device id, tenant, community, settings etc. */
 export function getPlatformInfo() {
     if (typeof window !== "undefined" && window.diagnostics) {
         try {
@@ -90,7 +95,6 @@ export function getPlatformInfo() {
     }
 }
 
-/** Reaching the function only in case of 401 unauthorized  **/
 function forceTokenUpdate() {
     const FCID = Math.round(Math.random() * 10000) + "-" + getPlatformInfo().sessionInfo?.connectionId;
     console.log(`-----------forceTokenUpdate: window.cefQuery = ${window.cefQuery}, FCID = ${FCID}`);
@@ -129,10 +133,21 @@ async function getToken() {
     return Promise.resolve(authToken);
 }
 
-// an indication that we are running in an e2e environment, with ui-streamer and transcontainer
+/** Returns a boolean that indicates whether we are running in an e2e environment, or on local browser */
 export function isRunningE2E() {
     return !!(typeof window !== "undefined" && window.cefQuery);
 }
 
 export const remotePlayer = require("./remotePlayer");
+
+/** Hyperscale proxy for Shaka player. Once created it should be used as a regular Shaka player.
+ * Pay attention that autoplay is NOT supported.
+ *@example
+ * import { HsShakaPlayer } from '@ip-synamedia/hs-sdk';
+ * const shakaPlayerInstance = new shaka.Player(videoElement);
+ * const player = new HsShakaPlayer(shakaPlayerInstance);
+ * player.load(url);
+ * player.play();
+ * player.unload();
+ * **/
 export const HsShakaPlayer = require("./hsShakaPlayer");

@@ -1,6 +1,6 @@
 {
     "name": "@ip-synamedia/hs-sdk",
-    "version": "3.0.12",
+    "version": "3.0.13",
     "main": "./dist/api.js",
     "description": "API for Hyperscale application",
     "license": "MIT",
@@ -24,7 +24,8 @@
         "babel-jest": "^27.5.1",
         "eslint": "^7.32.0",
         "eslint-plugin-jest": "^26.1.1",
-        "jest": "^27.5.1"
+        "jest": "^27.5.1",
+        "shaka-player": "^3.1.6"
     },
     "jest": {
         "verbose": false,

@@ -21,4 +21,3 @@ test("getPlatfromInfo", async () => {
 
     expect(platfromInfo).toEqual(expected);
 });
-

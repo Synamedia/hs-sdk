@@ -1,6 +1,7 @@
 const sessionInfo = require("./mockResponses/sessionInfo.json");
 const diagnostics = require("./mockResponses/diagnostics.json");
 const {init} = require("../src/api");
+
 exports.initSdkMock = async function (windowSpy) {
     windowSpy.mockImplementation(() => ({
         cefQuery: function (params) {
@@ -9,7 +10,7 @@ exports.initSdkMock = async function (windowSpy) {
                 return params.onSuccess(JSON.stringify(sessionInfo));
             }
         },
-        diagnostics:function () {
+        diagnostics: function () {
             return JSON.parse(JSON.stringify(diagnostics));
         }
     }));
