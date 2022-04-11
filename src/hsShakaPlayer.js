@@ -9,6 +9,7 @@ let shakaPlayerMediaElement;
 let isPlaying = false;
 
 if (typeof window !== "undefined") {
+    console.log("hs-sdk calling addEventListener on keydown");
     document.addEventListener("keydown", (event) => {
         if (shakaPlayerMediaElement && isRunningE2E() && isPlaying) {
             const currentTime = remotePlayer.currentTime;
@@ -17,6 +18,7 @@ if (typeof window !== "undefined") {
             shakaPlayerMediaElement.currentTime = currentTime;
         }
     });
+    console.log("hs-sdk calling addEventListener on EOS");
     document.addEventListener("EOS", () => {
         console.log("---ON EOS");
         if (shakaPlayerMediaElement && isRunningE2E()) {
@@ -27,6 +29,7 @@ if (typeof window !== "undefined") {
             shakaPlayerMediaElement.dispatchEvent(new CustomEvent("ended"));
         }
     });
+    console.log("hs-sdk calling addEventListener on ERR");
     document.addEventListener("ERR", (event) => {
         console.log("---ON ERR", event.detail);
         if (shakaPlayerMediaElement && isRunningE2E()) {
@@ -37,6 +40,8 @@ if (typeof window !== "undefined") {
             shakaPlayerMediaElement.dispatchEvent(new CustomEvent("error", event));
         }
     });
+} else {
+    console.error("hs-sdk - window is not defined");
 }
 
 const shakaPlayerHandler = {
