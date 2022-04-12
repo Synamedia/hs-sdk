@@ -32,7 +32,7 @@ const remotePlayer = {
      * @param {string} url - playable URL
      */
     load: function load(url) {
-        console.log(`-----------load: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
+        console.log(`remote player load: playbackUrl = ${url}, window.cefQuery ${window.cefQuery ? "is" : "is not"} defined`);
         if (url && window.cefQuery) {
             window.cefQuery({
                 request: JSON.stringify({ url, action: "load"}),
@@ -51,7 +51,7 @@ const remotePlayer = {
      * @param {string} url - playable URL
      */
     unload: function unload(url) {
-        console.log(`-----------unload: playbackUrl = ${url}, window.cefQuery = ${window.cefQuery}`);
+        console.log(`remote player unload: playbackUrl = ${url}, window.cefQuery ${window.cefQuery ? "is" : "is not"} defined`);
         if (url && window.cefQuery) {
             window.cefQuery({
                 request: JSON.stringify({ url, action: "unload"}),
@@ -69,7 +69,7 @@ const remotePlayer = {
      * Play loaded URL. Assuming load was called before.
      */
     play: function play() {
-        console.log(`-----------play: window.cefQuery = ${window.cefQuery}`);
+        console.log(`remote player play: window.cefQuery ${window.cefQuery ? "is" : "is not"} defined`);
         if (window.cefQuery) {
             window.cefQuery({
                 request: JSON.stringify({ url: "", action: "play"}),
