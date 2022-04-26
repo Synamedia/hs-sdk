@@ -6,7 +6,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git@github-chf01.synamedia.com:hyperscale/hs-sdk.git"
+        "url": "git@github.com:Synamedia/hs-sdk.git"
     },
     "scripts": {
         "clean": "rm -rf dist",
