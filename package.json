@@ -1,5 +1,5 @@
 {
-    "name": "@ip-synamedia/hs-sdk",
+    "name": "@Synamedia/hs-sdk",
     "version": "3.0.15",
     "main": "./dist/api.js",
     "description": "API for Hyperscale application",
@@ -15,6 +15,9 @@
         "compile": "babel src -d dist",
         "build": "npm run clean && npm run compile",
         "test": "jest --coverage"
+    },
+    "publishConfig": {
+        "@Synamedia:registry": "https://npm.pkg.github.com"
     },
     "devDependencies": {
         "@babel/cli": "^7.13.16",
