@@ -1,0 +1,19 @@
+{
+  "name": "remoteplayer-startplayback",
+  "version": "1.0.0",
+  "description": "",
+  "main": "myapp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "@Synamedia/hs-sdk": "3.0.27",
+    "shaka-player": "^3.2.9"
+  }
+}
